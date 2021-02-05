@@ -9,14 +9,14 @@
       <v-spacer></v-spacer>
       <!-- <v-btn color="success" :to="{path: 'system-review-survey'}" >system-review-surveys</v-btn> -->
 
-      <router-link to="/system-review-survey" custom v-slot="{ navigate }">
+      <!-- <router-link to="/system-review-survey" custom v-slot="{ navigate }">
         <v-btn class="mx-2" @click="navigate" color="success" role="link"><v-icon>mdi-pen</v-icon> System Review Survey</v-btn>
       </router-link>
 
       <router-link to="/system-review-survey-2" custom v-slot="{ navigate }">
         <v-btn @click="navigate" color="success" role="link"><v-icon>mdi-pen</v-icon> System Review Survey 2</v-btn>
       </router-link>
-      
+       -->
     </v-app-bar>
 
     <v-main>

@@ -5,13 +5,21 @@
         <v-col>
           <v-card class="mx-auto">
             <v-card-text>
-              <v-form ref="form" v-model="valid" lazy-validation @submit.prevent="">
-                <p>Please rate the awardee by clicking the stars based on the following standards:</p>
+              <v-form
+                ref="form"
+                v-model="valid"
+                lazy-validation
+                @submit.prevent=""
+              >
                 <p>
+                  Please rate the awardee by clicking the stars based on the
+                  following standards:
+                </p>
+                <!-- <p>
                   <b>P</b> - Poor <b>US</b> - Unsatisfactory <b>S</b> -
                   Satisfactory <b>VS</b> - Very Satisfactory <b>O</b> -
                   Outstanding
-                </p>
+                </p> -->
 
                 <v-simple-table dense>
                   <template v-slot:default>
@@ -19,19 +27,19 @@
                       <tr>
                         <th class="text-left"></th>
                         <th class="text-center">
-                          <b>P</b>
+                          <b>Poor</b>
                         </th>
                         <th class="text-center">
-                          <b>US</b>
+                          <b>Unsatisfactory</b>
                         </th>
                         <th class="text-center">
-                          <b>S</b>
+                          <b>Satisfactory</b>
                         </th>
                         <th class="text-center">
-                          <b>VS</b>
+                          <b>Very Satisfactory</b>
                         </th>
                         <th class="text-center">
-                          <b>O</b>
+                          <b>Outstanding</b>
                         </th>
                         <th class="text-center">Rating</th>
                       </tr>
@@ -87,13 +95,15 @@
                           >
                         </td>
                         <td class="text-center">
-                          <b>{{ question.pts }}</b>/5
+                          <b>{{ question.pts }}</b
+                          >/5
                         </td>
                       </tr>
                       <tr>
                         <td colspan="6" class="text-right">Overall Score:</td>
                         <td class="text-center">
-                          <b>{{ overall_score }}</b>/60
+                          <b>{{ overall_score }}</b
+                          >/60
                         </td>
                       </tr>
                     </tbody>
@@ -108,16 +118,19 @@
                   efficiency, economy and improvement in government operations?
                 </p>
 
-                <v-textarea label="Answer:" outlined />
+                <v-textarea label="Answer:" outlined v-model="essay1" />
 
                 <p>
                   Please identify outstanding accomplishments and best practices
                   that the awardee continously have?
                 </p>
 
-                <v-textarea label="Answer:" outlined />
+                <v-textarea label="Answer:" outlined v-model="essay2" />
 
                 <!-- <v-btn color="success" type="submit">Next</v-btn> -->
+                <!-- <v-btn class="mr-5" color="primary"> Continue </v-btn>
+
+                <v-btn @click="cancel_survey">Cancel</v-btn> -->
               </v-form>
             </v-card-text>
           </v-card>
@@ -127,26 +140,79 @@
   </div>
 </template>
 <script>
+/**
+ * component
+ * data
+ * data to store
+ * store to ajax
+ */
+
 export default {
+  props: {
+    isCleared: Boolean,
+  },
   data: () => ({
     valid: true,
-    awardee: "",
-    award: "",
     questions: [
-      { qs: "Attitude towards work", pts: 5 },
-      { qs: "Attitude to colleague", pts: 5 },
-      { qs: "Attitude towards client", pts: 5 },
-      { qs: "Commitment to public interest", pts: 5 },
-      { qs: "Dedication at work", pts: 5 },
-      { qs: "Initiative at work", pts: 3 },
-      { qs: "Honesty on dealings with customers", pts: 2 },
-      { qs: "Politeness", pts: 5 },
-      { qs: "Ability to handle stressful situation", pts: 4 },
-      { qs: "Attendance", pts: 3 },
-      { qs: "Productivity", pts: 2 },
-      { qs: "Creativity & Innovativeness", pts: 3 },
+      { qs: "Attitude towards work", pts: 1 },
+      { qs: "Attitude to colleague", pts: 1 },
+      { qs: "Attitude towards client", pts: 1 },
+      { qs: "Commitment to public interest", pts: 1 },
+      { qs: "Dedication at work", pts: 1 },
+      { qs: "Initiative at work", pts: 1 },
+      { qs: "Honesty on dealings with customers", pts: 1 },
+      { qs: "Politeness", pts: 1 },
+      { qs: "Ability to handle stressful situation", pts: 1 },
+      { qs: "Attendance", pts: 1 },
+      { qs: "Productivity", pts: 1 },
+      { qs: "Creativity & Innovativeness", pts: 1 },
     ],
+    essay1: "",
+    essay2: "",
   }),
+
+  watch: {
+    isCleared: function (val) {
+      if (val) {
+        this.questions.forEach((elemen) => {
+          elemen.pts = 1;
+        });
+        this.essay1 = "";
+        this.essay2 = "";
+      }
+    },
+    questions: {
+      handler: function () {
+        var answers = [];
+        this.questions.forEach((element) => {
+          answers.push(element.pts);
+        });
+        answers.push(this.essay1);
+        answers.push(this.essay2);
+        this.$emit("dataChanged", answers);
+      },
+      deep: true,
+    },
+    essay1: function() {
+      var answers = [];
+        this.questions.forEach((element) => {
+          answers.push(element.pts);
+        });
+        answers.push(this.essay1);
+        answers.push(this.essay2);
+        this.$emit("dataChanged", answers);
+    },
+    essay2: function() {
+      var answers = [];
+        this.questions.forEach((element) => {
+          answers.push(element.pts);
+        });
+        answers.push(this.essay1);
+        answers.push(this.essay2);
+        this.$emit("dataChanged", answers);
+    }
+  },
+
   computed: {
     overall_score: function () {
       var totalPts = 0;
@@ -158,8 +224,19 @@ export default {
   },
 
   methods: {
+    // next_survey() {
+    //   var answers = [];
+    //   this.questions.forEach((element) => {
+    //     answers.push(element.pts);
+    //   });
+    //   answers.push(this.essay1);
+    //   answers.push(this.essay2);
+    //   this.$emit("dataChanged", answers);
+    // },
+    // cancel_survey() {
+    //   this.$emit("cancelSurvey");
+    // },
     set_pts(i, n) {
-      console.log(i, n);
       this.questions[i].pts = n;
     },
   },

@@ -8,12 +8,12 @@
               <v-form
                 ref="form"
                 lazy-validation
-                @submit.prevent="submit_form()"
+                @submit.prevent=""
               >
                 <p>
                   Instructions: This survey will be used to improve our Rewards
-                  & Recognition program. Please check the circle of your
-                  corresponding choice/choices.
+                  & Recognition program. Please select your
+                  corresponding choice.
                 </p>
 
                 <!-- <h3>I. Assessment of PRAISE Program</h3> -->
@@ -40,7 +40,14 @@
                     full-width
                   ></v-text-field>
                 </div>
-                <!-- <v-btn color="primary" type="submit">Submit</v-btn> -->
+                <!-- <v-btn color="primary" type="submit">Submit</v-btn>
+                <v-btn type="cancel" @click="cancel_survey">Submit</v-btn> -->
+
+                <!-- <v-btn class="mr-5" color="primary" type="submit">
+                  Continue
+                </v-btn>
+
+                <v-btn @click="cancel_survey">Cancel</v-btn> -->
               </v-form>
             </v-card-text>
           </v-card>
@@ -51,6 +58,9 @@
 </template>
 <script>
 export default {
+  props: {
+      isCleared: Boolean,
+  },
   data() {
     return {
       items: [
@@ -108,10 +118,49 @@ export default {
       ],
     };
   },
-  methods: {
-    submit_form() {
-      console.log(this.answers);
+
+  watch:{
+    isCleared: function (val){
+        if (val) {
+          this.answers.forEach((elemen) => {
+            elemen.opt = ""
+            if (elemen.others) {
+              elemen.others = ""
+            }
+          });
+        }
     },
+     answers: {
+      handler: function () {
+        var answers = [];
+        this.answers.forEach((element) => {
+          if (element.opt == 'Others, please specify:') {
+            answers.push(element.others);
+          } else answers.push(element.opt);
+        });
+        this.$emit("dataChanged", answers);
+      },
+      deep: true,
+    },
+  },
+
+  methods: {
+    // submit_form() {
+    //   // console.log(this.answers);
+    //   var answers = [];
+    //   this.answers.forEach((element) => {
+    //     if (element.opt == "Others, please specify:") {
+    //       answers.push(element.others);
+    //     } else {
+    //       answers.push(element.opt);
+    //     }
+    //   });
+    //   // console.log(answers);
+    //   this.$emit("dataChanged", answers);
+    // },
+    // cancel_survey() {
+    //   this.$emit("cancelSurvey");
+    // },
   },
 };
 </script>

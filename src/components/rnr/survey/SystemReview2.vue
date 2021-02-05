@@ -15,13 +15,13 @@
                   Please rate the awardee by clicking the stars based on the
                   following standards:
                 </p>
-                <p>
+                <!-- <p>
                   <b>P</b> - Poor <b>US</b> - Unsatisfactory <b>S</b> -
                   Satisfactory <b>VS</b> - Very Satisfactory <b>O</b> -
                   Outstanding
-                </p>
+                </p> -->
 
-                <v-simple-table dense>
+                <v-simple-table dense class="mb-5">
                   <template v-slot:default>
                     <thead>
                       <tr>
@@ -46,17 +46,21 @@
                     <tbody>
                       <!-- 1,7,8,14 -->
                       <template v-for="(question, i) in questions">
-                        <tr v-if="i == 1||i == 8" :key="i" class="grey lighten-3">
-                          <td colspan="6">{{question.qs}}</td>
+                        <tr
+                          v-if="i == 1 || i == 8"
+                          :key="i"
+                          class="grey lighten-3"
+                        >
+                          <td colspan="6">{{ question.qs }}</td>
                         </tr>
-                        <tr v-else-if="i == 7||i == 14" :key="i">
-                          <td>{{question.qs}}</td>
+                        <tr v-else-if="i == 7 || i == 14" :key="i">
+                          <td>{{ question.qs }}</td>
                           <td colspan="5">
                             <v-text-field
                               class="pt-5"
                               label="..."
                               outlined
-                              v-model="questions[i].value"
+                              v-model="questions[i].pts"
                             ></v-text-field>
                           </td>
                         </tr>
@@ -115,6 +119,11 @@
                     </tbody>
                   </template>
                 </v-simple-table>
+
+                <!-- <v-btn class="mr-5" color="primary" type="submit">
+                  Continue
+                </v-btn>
+                <v-btn @click="cancel_survey">Cancel</v-btn> -->
               </v-form>
             </v-card-text>
           </v-card>
@@ -125,26 +134,27 @@
 </template>
 <script>
 export default {
+  props: {
+    isCleared: Boolean,
+  },
   data: () => ({
     valid: true,
-    awardee: "",
-    award: "",
     questions: [
       {
         qs: "1. How does the employee's performance improve after the award?",
-        pts: 5,
+        pts: 1,
       },
       {
-        qs: "2. What attrubutes has improved/declined?"
+        qs: "2. Rate the following attributes",
       },
-      { qs: "Dependability", pts: 5 },
-      { qs: "Adaptability", pts: 5 },
-      { qs: "Cooperativeness", pts: 5 },
-      { qs: "Committed/Passionate", pts: 5 },
-      { qs: "Proactive", pts: 3 },
+      { qs: "Dependability", pts: 1 },
+      { qs: "Adaptability", pts: 1 },
+      { qs: "Cooperativeness", pts: 1 },
+      { qs: "Committed/Passionate", pts: 1 },
+      { qs: "Proactive", pts: 1 },
       {
         qs: "Others, please specify:",
-        value: "",
+        pts: "",
       },
       // {
       //   qs: "3. What attributes has declined?",
@@ -160,6 +170,29 @@ export default {
       // },
     ],
   }),
+  watch: {
+    isCleared: function (val) {
+      if (val) {
+        this.questions.forEach((elemen, i) => {
+          if (i != 1 ) {
+            elemen.pts = i != 7?1:"";
+          }
+        });
+      }
+    },
+    questions: {
+      handler: function () {
+        var answers = [];
+        this.questions.forEach((element, i) => {
+          if (i != 1) {
+            answers.push(element.pts);
+          }
+        });
+        this.$emit("dataChanged", answers);
+      },
+      deep: true,
+    },
+  },
   computed: {
     overall_score: function () {
       var totalPts = 0;
@@ -176,9 +209,22 @@ export default {
       return color;
     },
     set_pts(i, n) {
-      console.log(i, n);
+      // console.log(i, n);
       this.questions[i].pts = n;
     },
+    // submit_form() {
+    //   var answers = [];
+    //   this.questions.forEach((element) => {
+    //     if (element.pts) {
+    //       answers.push(element.pts);
+    //     }
+    //   });
+    //   this.$emit("dataChanged", answers);
+    //   // console.log(answers);
+    // },
+    // cancel_survey() {
+    //   this.$emit("cancelSurvey");
+    // },
   },
 };
 </script>
